@@ -21,6 +21,7 @@ SAMPLER(sampler_MainTex);
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
     float4 _MainTex_ST;
+    float _Cutoff;
 CBUFFER_END
 
 
@@ -40,6 +41,7 @@ half4 FragProgram (VertexOutput input) : SV_Target
     half4 col = _Color;
     half4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
     half4 finalCol = col * texCol;
+    clip(finalCol.a - _Cutoff);
     return finalCol;
 }
 
