@@ -51,6 +51,7 @@ partial class CameraRender
             }
         
             var drawSettings = new DrawingSettings(unsupportShaderTagId[0], new SortingSettings(_camera));
+            drawSettings.enableDynamicBatching = _enableDynamicBatch;
             for (int n = 1; n < unsupportShaderTagId.Length; n++)
             {
                 drawSettings.SetShaderPassName(n, unsupportShaderTagId[n]);

@@ -11,17 +11,19 @@ public partial class CameraRender
     private const string bufferName = "Camera Buffer";
     private CommandBuffer _cameraBuffer = new CommandBuffer();
     private static ShaderTagId unlitShaderTagId = new ShaderTagId("ARPUnlit");
-    
         
     private DrawingSettings _drawingSettings;
     private SortingSettings _sortingSettings;
     private FilteringSettings _filteringSettings;
 
-    public void Render(ref ScriptableRenderContext context, Camera camera)
+    private bool _enableDynamicBatch;
+
+    public void Render(ref ScriptableRenderContext context, Camera camera, bool enableDynamicBatch)
     {
         _context = context;
         _camera = camera;
         _cameraBuffer.name = bufferName + " " + _camera.name;
+        _enableDynamicBatch = enableDynamicBatch;
         PrepareForSceneWindow();
         if (!Cull())
         {
@@ -67,6 +69,7 @@ public partial class CameraRender
         _sortingSettings = new SortingSettings(_camera);
         _sortingSettings.criteria = SortingCriteria.CommonOpaque;
         _drawingSettings = new DrawingSettings(unlitShaderTagId,_sortingSettings);
+        _drawingSettings.enableDynamicBatching = _enableDynamicBatch;
         _filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
 
 
