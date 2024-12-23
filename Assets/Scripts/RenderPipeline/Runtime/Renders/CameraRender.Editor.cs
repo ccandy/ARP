@@ -9,6 +9,8 @@ partial class CameraRender
 {
     partial void DrawGizmos();
     partial void DrawUnSupportShaders();
+
+    partial void PrepareForSceneWindow();
     
     private static ShaderTagId[] unsupportShaderTagId =
     {
@@ -26,15 +28,20 @@ partial class CameraRender
     #if UNITY_EDITOR
         partial void DrawGizmos()
         {
-            //ShouldRenderGizmos() always returns false
-            
-            //if (Handles.ShouldRenderGizmos())
+            if (Handles.ShouldRenderGizmos())
             {
                 _context.DrawGizmos(_camera, GizmoSubset.PreImageEffects);
                 _context.DrawGizmos(_camera, GizmoSubset.PostImageEffects);
             }
         }
-        
+
+        partial void PrepareForSceneWindow()
+        {
+            if (_camera.cameraType == CameraType.SceneView)
+            {
+                ScriptableRenderContext.EmitWorldGeometryForSceneView(_camera);
+            }
+        }
         
         partial void DrawUnSupportShaders()
         {
