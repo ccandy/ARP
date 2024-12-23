@@ -7,7 +7,7 @@ public class CameraRender
 {
     private ScriptableRenderContext _context;
     private Camera _camera;
-
+    private CullingResults cullingResults;
 
     private const string bufferName = "Camera Buffer";
     private CommandBuffer _cameraBuffer = new CommandBuffer
@@ -15,10 +15,21 @@ public class CameraRender
         name = bufferName
     };
 
+    private static ShaderTagId unlitShaderTagId = new ShaderTagId("ARPUnlit");
+    private DrawingSettings _drawingSettings;
+    private SortingSettings _sortingSettings;
+    private FilteringSettings _filteringSettings;
+
 public void Render(ref ScriptableRenderContext context, Camera camera)
     {
         _context = context;
         _camera = camera;
+        
+        if (!Cull())
+        {
+            return;
+        }
+        
         Setup();
         DrawVisibleGeo();
         Submit();
@@ -26,28 +37,50 @@ public void Render(ref ScriptableRenderContext context, Camera camera)
 
     private void Setup()
     {
-        RPUtil.BeginSample(ref _context, _cameraBuffer);
         _context.SetupCameraProperties(_camera);
+        _cameraBuffer.ClearRenderTarget(true, true, Color.clear);
+        RPUtil.BeginSample(ref _context, _cameraBuffer);
+        RPUtil.ExecuteBuffer(ref _context, _cameraBuffer);
     }
 
-    private void Cull()
+    private bool Cull()
     {
-        
+        if (_camera.TryGetCullingParameters(out ScriptableCullingParameters scriptableCullingParameters))
+        {
+            cullingResults = _context.Cull(ref scriptableCullingParameters);
+            return true;
+        }
+
+        return false;
     }
 
     private void DrawVisibleGeo()
     {
+        DrawOpaqueGeo();
         _context.DrawSkybox(_camera);
+        DrawTransGeo();
     }
 
     private void DrawOpaqueGeo()
     {
+        _sortingSettings = new SortingSettings(_camera);
+        _sortingSettings.criteria = SortingCriteria.CommonOpaque;
+        _drawingSettings = new DrawingSettings(unlitShaderTagId,_sortingSettings);
+        _filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
 
+
+        var sortSettings = new SortingSettings(_camera);
+        sortSettings.criteria = SortingCriteria.CommonOpaque;
+        _context.DrawRenderers(cullingResults, ref _drawingSettings, ref _filteringSettings);
     }
 
     private void DrawTransGeo()
     {
+        _sortingSettings.criteria = SortingCriteria.CommonTransparent;
+        _filteringSettings.renderQueueRange = RenderQueueRange.transparent;
+        _drawingSettings.sortingSettings = _sortingSettings;
         
+        _context.DrawRenderers(cullingResults, ref _drawingSettings, ref _filteringSettings);
     }
 
 
