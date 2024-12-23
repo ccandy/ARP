@@ -2,6 +2,7 @@ Shader "ARP/Unlit"
 {
     Properties
     {
+        _MainTex("Main Texture", 2D) = "white"{}
         _Color("Color", Color) = (1,1,1,1)
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("Src Blend", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Dst Blend", Float) = 0
