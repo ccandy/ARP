@@ -48,14 +48,16 @@ public class Lighting
         for (int n = 0; n < visibleLights.Length; n++)
         {
             VisibleLight visibleLight = visibleLights[n];
-
-            if (n >= MAXDIRECTIONALLIGHTS)
+            if (visibleLight.lightType == LightType.Directional)
             {
-                break;
+                if (dirLightCount >= MAXDIRECTIONALLIGHTS)
+                {
+                    break;
+                }
+                directionalLights.DirectionalLightDirs[dirLightCount] = -visibleLight.localToWorldMatrix.GetColumn(2);
+                directionalLights.DirectionalLightColors[dirLightCount] = visibleLight.finalColor;
+                dirLightCount++;
             }
-            directionalLights.DirectionalLightDirs[n] = -visibleLight.localToWorldMatrix.GetColumn(2);
-            directionalLights.DirectionalLightColors[n] = visibleLight.finalColor;
-            dirLightCount = n;
         }
 
         SendDataToGPU();
