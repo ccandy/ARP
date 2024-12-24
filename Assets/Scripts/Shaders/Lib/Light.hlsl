@@ -2,7 +2,7 @@
 #define ARP_LIGHT_INCLUDE
 
 
-const int MAX_DIRECTIONAL_LIGHTS = 4;
+#define MAX_DIRECTIONAL_LIGHTS 4
 
 CBUFFER_START(CustomLight)
 
