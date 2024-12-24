@@ -1,5 +1,5 @@
-#ifndef ARP_LIGHT
-#define ARP_LIGHT
+#ifndef ARP_LIGHT_INCLUDE
+#define ARP_LIGHT_INCLUDE
 
 
 struct Light
