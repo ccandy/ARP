@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-
-
 public class ARP : RenderPipeline
 {
     private CameraRender _cameraRender = new CameraRender();

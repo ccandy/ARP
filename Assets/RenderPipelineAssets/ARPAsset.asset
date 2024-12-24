@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12a9dd1759722a64290eae20743025ee, type: 3}
   m_Name: ARPAsset
   m_EditorClassIdentifier: 
+  EnableSRPBatch: 1
+  EnableDynamicBatch: 1
