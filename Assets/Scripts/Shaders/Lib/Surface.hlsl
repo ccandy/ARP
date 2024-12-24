@@ -1,5 +1,5 @@
-#ifndef ARP_SURFACE
-#define ARP_SURFACE
+#ifndef ARP_SURFACE_INCLUDE
+#define ARP_SURFACE_INCLUDE
 
 struct Surface
 {
