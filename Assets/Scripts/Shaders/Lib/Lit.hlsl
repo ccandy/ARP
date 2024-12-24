@@ -24,8 +24,10 @@ SAMPLER(sampler_MainTex);
 
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
-float4 _MainTex_ST;
-float _Cutoff;
+    float4 _MainTex_ST;
+    float _Cutoff;
+    float _Roughness;
+    float _Metallic;
 CBUFFER_END
 
 VertexOutput VertexProgram (VertexInput input)
@@ -50,6 +52,8 @@ half4 FragProgram (VertexOutput input) : SV_Target
     surface.albedo = finalCol.rgb;
     surface.alpha = finalCol.a;
     surface.normal = normalize(input.normal);
+    surface.metallic = _Metallic;
+    surface.roughness = _Roughness;
     
     clip(surface.alpha - _Cutoff);
     return float4(surface.albedo, surface.alpha);
