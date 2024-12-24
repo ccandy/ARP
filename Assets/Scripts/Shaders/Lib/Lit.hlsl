@@ -3,6 +3,7 @@
 
 #include "Lib/Common.hlsl"
 #include "Lib/Surface.hlsl"
+#include "Lib/Light.hlsl"
 
 struct VertexInput
 {
@@ -41,7 +42,6 @@ VertexOutput VertexProgram (VertexInput input)
 
 half4 FragProgram (VertexOutput input) : SV_Target
 {
-    // sample the texture
     half4 col = _Color;
     half4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
     half4 finalCol = col * texCol;
@@ -49,7 +49,7 @@ half4 FragProgram (VertexOutput input) : SV_Target
     Surface surface;
     surface.albedo = finalCol.rgb;
     surface.alpha = finalCol.a;
-    surface.normal = input.normal;
+    surface.normal = normalize(input.normal);
     
     clip(surface.alpha - _Cutoff);
     return float4(surface.albedo, surface.alpha);

@@ -18,8 +18,8 @@ public class Lighting
 
     private static int
         directionalLightColorsId = Shader.PropertyToID("_DirectionalLightColors"),
-        directionalLightDirsId = Shader.PropertyToID("_directionalLightDirs"),
-        directionalLightCountId = Shader.PropertyToID("directionalLightCount");
+        directionalLightDirsId = Shader.PropertyToID("_DirectionalLightDirs"),
+        directionalLightCountId = Shader.PropertyToID("_DirectionalLightCount");
     
     private int dirLightCount = 0;
 
