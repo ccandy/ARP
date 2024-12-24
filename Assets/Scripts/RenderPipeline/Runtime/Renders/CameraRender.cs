@@ -18,6 +18,8 @@ public partial class CameraRender
 
     private bool _enableDynamicBatch;
 
+    private Lighting _light = new Lighting();
+
     public void Render(ref ScriptableRenderContext context, Camera camera, bool enableDynamicBatch)
     {
         _context = context;
@@ -31,6 +33,7 @@ public partial class CameraRender
         }
         
         Setup();
+        _light.Setup(ref _context, ref cullingResults);
         DrawVisibleGeo();
         DrawUnSupportShaders();
         DrawGizmos();
