@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Light 
-{
-    
-}
-
 public struct DirectionalLightsData
 {
     public Vector4[] DirectionalLightColors;
