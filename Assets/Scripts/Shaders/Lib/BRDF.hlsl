@@ -4,6 +4,9 @@
 #define PI 3.1415926
 #define MAX_REFLECTIVITY 0.04
 
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
+
+
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
@@ -63,7 +66,7 @@ BRDF GetBRDF(Surface surface)
 
     brdf.diffuse = surface.albedo;
     brdf.specular = 1;
-    brdf.roughness = surface.perceptualroughness * surface.perceptualroughness;
+    brdf.roughness = PerceptualRoughnessToRoughness(surface.perceptualroughness);
     brdf.metallic = surface.metallic;
 
     return brdf;
