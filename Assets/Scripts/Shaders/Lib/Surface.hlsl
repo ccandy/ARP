@@ -5,7 +5,8 @@ struct Surface
 {
     float3 albedo;
     float3 normal;
-    float roughness;
+    float3 viewdirection;
+    float perceptualroughness;
     float metallic; 
     
     float alpha;
@@ -19,7 +20,7 @@ Surface GetSurface(float3 albedo, float3 normal, float alpha, float roughess, fl
     surface.normal = normal;
     surface.alpha = alpha;
     surface.metallic = metallic;
-    surface.roughness = roughess;
+    surface.perceptualroughness = roughess;
 
     return surface;
 }

@@ -4,6 +4,8 @@
 #include "Lib/Common.hlsl"
 #include "Lib/Surface.hlsl"
 #include "Lib/Light.hlsl"
+#include "Lib/BRDF.hlsl"
+#include "Lib/Lighting.hlsl"
 
 struct VertexInput
 {
@@ -53,7 +55,7 @@ half4 FragProgram (VertexOutput input) : SV_Target
     surface.alpha = finalCol.a;
     surface.normal = normalize(input.normal);
     surface.metallic = _Metallic;
-    surface.roughness = _Roughness;
+    surface.perceptualroughness = _Roughness;
     
     clip(surface.alpha - _Cutoff);
     return float4(surface.albedo, surface.alpha);
