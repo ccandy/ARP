@@ -12,19 +12,6 @@ struct Surface
     float alpha;
 };
 
-Surface GetSurface(float3 albedo, float3 normal, float alpha, float roughess, float metallic)
-{
-    Surface surface;
-
-    surface.albedo = albedo;
-    surface.normal = normal;
-    surface.alpha = alpha;
-    surface.metallic = metallic;
-    surface.perceptualroughness = roughess;
-
-    return surface;
-}
-
 
 
 
