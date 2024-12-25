@@ -61,6 +61,7 @@ public class Lighting
         }
 
         SendDataToGPU();
+        CleanUP();
     }
 
     private void SendDataToGPU()
@@ -71,6 +72,21 @@ public class Lighting
         
         RPUtil.ExecuteBuffer(ref _context, lightBuffer);
         
+    }
+
+    public void CleanUP()
+    {
+        int i = 0;
+        for (; i < directionalLights.DirectionalLightColors.Length; i++)
+        {
+            directionalLights.DirectionalLightColors[i] = Vector4.zero;
+        }
+
+        i = 0;
+        for (; i < directionalLights.DirectionalLightColors.Length; i++)
+        {
+            directionalLights.DirectionalLightColors[i] = Vector4.zero;
+        }
     }
     
 
