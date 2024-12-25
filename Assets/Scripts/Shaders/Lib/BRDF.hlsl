@@ -2,6 +2,7 @@
 #define ARP_BRDF_INCLUDE
 
 #define PI 3.1415926
+#define MAX_REFLECTIVITY 0.04
 
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
@@ -42,6 +43,45 @@ float DistributionGGX(float3 N, float3 H, float roughness)
 
     return nom / denom;
 }
+
+float GetF0(float3 albedo, float metallic)
+{
+    return lerp(float3(MAX_REFLECTIVITY, MAX_REFLECTIVITY, MAX_REFLECTIVITY), albedo, metallic);
+}
+
+struct BRDF
+{
+    float3 diffuse;
+    float3 specular;
+    float roughness;
+    float metallic;
+};
+
+BRDF GetBRDF(Surface surface)
+{
+    BRDF brdf;
+
+    brdf.diffuse = surface.albedo;
+    brdf.specular = 1;
+    brdf.roughness = surface.perceptualroughness * surface.perceptualroughness;
+    brdf.metallic = surface.metallic;
+
+    return brdf;
+}
+
+float3 GetBRDFDiffuse(float3 albedo, float metallic, float cosTheta)
+{
+    float F0 = GetF0(albedo, metallic);
+    float F = FresnelSchlick(cosTheta, F0);
+
+    float3 kd = (1.0 - F) * (1 - metallic);
+    float diffuse = kd * albedo/PI;
+
+    return diffuse;
+}
+
+
+
 
 
 
