@@ -58,6 +58,7 @@ struct BRDF
     float3 specular;
     float roughness;
     float metallic;
+    float F0;
 };
 
 BRDF GetBRDF(Surface surface)
@@ -68,7 +69,8 @@ BRDF GetBRDF(Surface surface)
     brdf.specular = 1;
     brdf.roughness = PerceptualRoughnessToRoughness(surface.perceptualroughness);
     brdf.metallic = surface.metallic;
-
+    brdf.F0 = GetF0(surface.albedo, surface.metallic);
+    
     return brdf;
 }
 
@@ -76,7 +78,7 @@ float3 GetBRDFDiffuse(BRDF brdf, float cosTheta)
 {
     float3 albedo = brdf.diffuse;
     float metallic = brdf.metallic;
-    float F0 = GetF0(albedo, metallic);
+    float F0 = brdf.F0;
     float F = FresnelSchlick(cosTheta, F0);
 
     float3 kd = (1.0 - F) * (1 - metallic);
@@ -85,8 +87,25 @@ float3 GetBRDFDiffuse(BRDF brdf, float cosTheta)
     return diffuse;
 }
 
-float3 GetBRDFSpecular()
+float3 GetBRDFSpecular(BRDF brdf, float3 H, float3 L, Surface surface)
 {
+    float3 N = surface.normal;
+    float3 V = surface.viewdirection;
+    
+    float roughness = brdf.roughness;
+    float F0 = brdf.F0;
+    
+    
+    float G = GeometrySmith(N, V, L, roughness);
+    float NDF = DistributionGGX(N, H, roughness);
+    float3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+    float3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+    float3 specular = numerator / max(denominator, 0.001);
+
+    return specular;
+    
     
 }
 
