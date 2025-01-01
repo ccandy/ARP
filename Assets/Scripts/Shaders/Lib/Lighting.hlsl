@@ -9,7 +9,7 @@ float3 GetDirectionalLighting(Surface surface, BRDF brdf, Light light)
     float3 H = normalize(V + L);
     float HdotV = dot(H,V);
     
-    float3 diffuse = GetBRDFDiffuse(surface.albedo, brdf.metallic, HdotV) * light.color;
+    float3 diffuse = GetBRDFDiffuse(brdf, HdotV) * light.color;
     
     return diffuse;
 }

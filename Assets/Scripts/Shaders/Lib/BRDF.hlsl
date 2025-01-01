@@ -72,8 +72,10 @@ BRDF GetBRDF(Surface surface)
     return brdf;
 }
 
-float3 GetBRDFDiffuse(float3 albedo, float metallic, float cosTheta)
+float3 GetBRDFDiffuse(BRDF brdf, float cosTheta)
 {
+    float3 albedo = brdf.diffuse;
+    float metallic = brdf.metallic;
     float F0 = GetF0(albedo, metallic);
     float F = FresnelSchlick(cosTheta, F0);
 
@@ -81,6 +83,11 @@ float3 GetBRDFDiffuse(float3 albedo, float metallic, float cosTheta)
     float3 diffuse = kd * albedo/PI;
 
     return diffuse;
+}
+
+float3 GetBRDFSpecular()
+{
+    
 }
 
 
