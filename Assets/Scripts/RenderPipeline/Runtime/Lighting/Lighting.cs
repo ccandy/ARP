@@ -61,7 +61,7 @@ public class Lighting
         }
 
         SendDataToGPU();
-        CleanUP();
+        
     }
 
     private void SendDataToGPU()
@@ -76,6 +76,7 @@ public class Lighting
 
     public void CleanUP()
     {
+        dirLightCount = 0;
         int i = 0;
         for (; i < directionalLights.DirectionalLightColors.Length; i++)
         {

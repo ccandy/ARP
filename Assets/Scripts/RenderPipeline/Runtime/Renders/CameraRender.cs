@@ -33,11 +33,14 @@ public partial class CameraRender
         }
         
         Setup();
+        CleanUP();
         _light.Setup(ref _context, ref cullingResults);
         DrawVisibleGeo();
         DrawUnSupportShaders();
         DrawGizmos();
         Submit();
+        
+
     }
 
     private void Setup()
@@ -97,4 +100,12 @@ public partial class CameraRender
         _context.Submit();
     }
 
+    private void CleanUP()
+    {
+        if (_light != null)
+        {
+            _light.CleanUP();
+        }
+    }
+    
 }
