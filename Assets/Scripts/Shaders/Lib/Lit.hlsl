@@ -64,7 +64,7 @@ half4 FragProgram (VertexOutput input) : SV_Target
 
     BRDF brdf = GetBRDF(surface);
     
-    float3 diffuse = GetIncomingLights(surface, brdf);
+    half3 diffuse = GetIncomingLights(surface, brdf) ;
     
     clip(surface.alpha - _Cutoff);
     return float4(diffuse, surface.alpha);

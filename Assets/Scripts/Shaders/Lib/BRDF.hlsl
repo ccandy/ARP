@@ -78,7 +78,7 @@ float3 GetBRDFDiffuse(float3 albedo, float metallic, float cosTheta)
     float F = FresnelSchlick(cosTheta, F0);
 
     float3 kd = (1.0 - F) * (1 - metallic);
-    float diffuse = kd * albedo/PI;
+    float3 diffuse = kd * albedo/PI;
 
     return diffuse;
 }
