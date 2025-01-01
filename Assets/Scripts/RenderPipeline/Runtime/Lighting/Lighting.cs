@@ -22,11 +22,12 @@ public class Lighting
         directionalLightCountId = Shader.PropertyToID("_DirectionalLightCount");
     
     private int dirLightCount = 0;
-
-
-    private DirectionalLightsData directionalLights = new DirectionalLightsData(MAXDIRECTIONALLIGHTS);
     
-    public void Setup(ref ScriptableRenderContext context, ref CullingResults cullingResults)
+    private DirectionalLightsData directionalLights = new DirectionalLightsData(MAXDIRECTIONALLIGHTS);
+
+    private Shadow _shadow = new Shadow();
+    
+    public void Setup(ref ScriptableRenderContext context, ref CullingResults cullingResults, ShadowGlobalSettings shadowGlobalSettings)
     {
         if (context == null || cullingResults == null)
         {
@@ -37,8 +38,15 @@ public class Lighting
         _context = context;
         
         RPUtil.BeginSample(ref context, lightBuffer);
-        SetupDirectionalLights();
+        _shadow.Setup(context, ref cullingResults, shadowGlobalSettings);
+        SetupLights();
+        _shadow.Render();
         RPUtil.EndSample(ref context, lightBuffer);
+    }
+    
+    public void SetupLights()
+    {
+        SetupDirectionalLights();
     }
     
     public void SetupDirectionalLights()
@@ -59,9 +67,7 @@ public class Lighting
                 dirLightCount++;
             }
         }
-
         SendDataToGPU();
-        
     }
 
     private void SendDataToGPU()

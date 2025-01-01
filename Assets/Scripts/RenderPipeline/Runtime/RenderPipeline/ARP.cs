@@ -7,9 +7,11 @@ public class ARP : RenderPipeline
 {
     private CameraRender _cameraRender = new CameraRender();
     private bool _enableDynamicBatch;
-    public ARP(bool enableSRPBatch, bool enableDynamicBatch)
+    private ShadowGlobalSettings _shadowGlobalSettings;
+    public ARP(bool enableSRPBatch, bool enableDynamicBatch, ShadowGlobalSettings shadowGlobalSettings)
     {
         GraphicsSettings.useScriptableRenderPipelineBatching = enableSRPBatch;
+        _shadowGlobalSettings = shadowGlobalSettings;
     }
     
     protected override void Render(ScriptableRenderContext context, Camera[] cameras)
@@ -17,7 +19,7 @@ public class ARP : RenderPipeline
         for (int n = 0; n < cameras.Length; n++)
         {
             Camera camera = cameras[n];
-            _cameraRender.Render(ref context, camera,_enableDynamicBatch );
+            _cameraRender.Render(ref context, camera,_enableDynamicBatch,_shadowGlobalSettings);
         }
     }
 }

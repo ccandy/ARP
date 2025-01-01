@@ -19,22 +19,23 @@ public partial class CameraRender
     private bool _enableDynamicBatch;
 
     private Lighting _light = new Lighting();
+   
 
-    public void Render(ref ScriptableRenderContext context, Camera camera, bool enableDynamicBatch)
+    public void Render(ref ScriptableRenderContext context, Camera camera, bool enableDynamicBatch, ShadowGlobalSettings shadowGlobalSettings)
     {
         _context = context;
         _camera = camera;
         _cameraBuffer.name = bufferName + " " + _camera.name;
         _enableDynamicBatch = enableDynamicBatch;
         PrepareForSceneWindow();
-        if (!Cull())
+        if (!Cull(shadowGlobalSettings.MaxShadowDistance))
         {
             return;
         }
         
         Setup();
         CleanUP();
-        _light.Setup(ref _context, ref cullingResults);
+        _light.Setup(ref _context, ref cullingResults, shadowGlobalSettings);
         DrawVisibleGeo();
         DrawUnSupportShaders();
         DrawGizmos();
@@ -52,10 +53,11 @@ public partial class CameraRender
         RPUtil.ExecuteBuffer(ref _context, _cameraBuffer);
     }
 
-    private bool Cull()
+    private bool Cull(float shadowdistance)
     {
         if (_camera.TryGetCullingParameters(out ScriptableCullingParameters scriptableCullingParameters))
         {
+            scriptableCullingParameters.shadowDistance = Mathf.Min(shadowdistance, _camera.farClipPlane);
             cullingResults = _context.Cull(ref scriptableCullingParameters);
             return true;
         }

@@ -17,6 +17,6 @@ public class ARPAsset : RenderPipelineAsset
     
     protected override RenderPipeline CreatePipeline()
     {
-        return new ARP(EnableSRPBatch,EnableDynamicBatch);
+        return new ARP(EnableSRPBatch,EnableDynamicBatch, ShadowSettings);
     }
 }
