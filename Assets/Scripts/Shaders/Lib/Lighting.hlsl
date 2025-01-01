@@ -31,11 +31,4 @@ float3 GetIncomingLights(Surface surface, BRDF brdf)
     return lightColor;
 }
 
-
-
-
-
-
-
-
 #endif
