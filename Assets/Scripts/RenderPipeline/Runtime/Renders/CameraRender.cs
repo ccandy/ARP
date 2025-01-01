@@ -32,16 +32,13 @@ public partial class CameraRender
         {
             return;
         }
-        
-        Setup();
-        CleanUP();
         _light.Setup(ref _context, ref cullingResults, shadowGlobalSettings);
+        Setup();
         DrawVisibleGeo();
         DrawUnSupportShaders();
         DrawGizmos();
         Submit();
-        
-
+        CleanUP();
     }
 
     private void Setup()
