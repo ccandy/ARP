@@ -36,8 +36,9 @@ public class Shadow
             VisibleLight visibleLight = visibleLights[n];
             Light light = visibleLight.light;
 
-            if (light.shadowStrength != 0 && light.shadows != LightShadows.None 
-                                          && ShadowedDirectionalLightCount < MAX_DIRECTION_SHADOW_COUNT)
+            if (light.shadowStrength > 0 && light.shadows != LightShadows.None 
+                                          && ShadowedDirectionalLightCount < MAX_DIRECTION_SHADOW_COUNT
+                                          && cullingResults.GetShadowCasterBounds(n, out Bounds b))
             {
                 _localDirectionalShadowSetting[ShadowedDirectionalLightCount++] = new LocalDirectionalShadowSetting
                 {
@@ -50,8 +51,17 @@ public class Shadow
 
     public void Render()
     {
+        if (ShadowedDirectionalLightCount > 0)
+        {
+            RenderDirectionalShadow();
+        }
+    }
+
+    private void RenderDirectionalShadow()
+    {
         
     }
+    
     
     
     
