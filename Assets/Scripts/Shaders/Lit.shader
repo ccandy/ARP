@@ -13,15 +13,16 @@ Shader "ARP/Lit"
     }
     SubShader
     {
-        Tags 
-        { 
-            "RenderType"="Opaque" 
-            "LightMode" = "ARPUnlit"
-        }
+        
         LOD 100
 
         Pass
         {
+            Tags 
+            { 
+                "RenderType"="Opaque" 
+                "LightMode" = "ARPUnlit"
+            }
             Blend [_SrcBlend] [_DstBlend]
             ZWrite [_ZWrite]
             HLSLPROGRAM
@@ -33,5 +34,22 @@ Shader "ARP/Lit"
             
             ENDHLSL
         }
+
+        Pass
+        {
+            Tags 
+            { 
+                "RenderType"="Opaque" 
+                "LightMode" = "ShadowCaster"
+            }
+            
+            ColorMask 0
+            HLSLPROGRAM
+            #include "Lib/ShadowCaster.hlsl"
+             #pragma vertex ShadowCasterVertexProgram
+            #pragma fragment ShadowCasterFragProgram
+            ENDHLSL
+        }
+
     }
 }

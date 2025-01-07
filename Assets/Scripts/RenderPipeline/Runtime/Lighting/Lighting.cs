@@ -40,7 +40,7 @@ public class Lighting
         RPUtil.BeginSample(ref context, lightBuffer);
         _shadow.Setup(context, ref cullingResults, shadowGlobalSettings);
         SetupLights();
-        _shadow.Render();
+        _shadow.Render(ref _cullingResults);
         RPUtil.EndSample(ref context, lightBuffer);
     }
     
@@ -94,7 +94,10 @@ public class Lighting
         {
             directionalLights.DirectionalLightColors[i] = Vector4.zero;
         }
+        
+        _shadow.CleanUP();
     }
+
     
 
 }
