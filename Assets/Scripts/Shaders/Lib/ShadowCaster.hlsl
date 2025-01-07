@@ -37,6 +37,9 @@ VertexOutput ShadowCasterVertexProgram (VertexInput input)
 
 half4 ShadowCasterFragProgram (VertexOutput input) : SV_Target
 {
+    half4 texCol = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+    clip(texCol.a - _Cutoff);
+    
     return 0;
 }
 
