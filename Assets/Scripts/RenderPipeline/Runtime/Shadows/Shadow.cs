@@ -23,6 +23,7 @@ public class Shadow
     {
         public int VisiualLightIndex;
         public float ShadowStrength;
+        public float shadowLightNearPlane;
     }
 
 
@@ -52,7 +53,8 @@ public class Shadow
                 _localDirectionalShadowSetting[ShadowedDirectionalLightCount++] = new LocalDirectionalShadowSetting
                 {
                     VisiualLightIndex = n,
-                    ShadowStrength = light.shadowStrength
+                    ShadowStrength = light.shadowStrength,
+                    shadowLightNearPlane = light.shadowNearPlane
                 };
             } 
         }
@@ -81,13 +83,15 @@ public class Shadow
         {
             LocalDirectionalShadowSetting localDirectionalShadowSetting = _localDirectionalShadowSetting[n];
             int visualIndex = localDirectionalShadowSetting.VisiualLightIndex;
-            cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(visualIndex, 0, 1, Vector3.zero,
-                tileSize, 0,
+            float nearPlane = localDirectionalShadowSetting.shadowLightNearPlane;
+            cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(visualIndex, 0, 1, Vector3.one,
+                tileSize, nearPlane,
                 out Matrix4x4 viewMat, out Matrix4x4 projMat, out ShadowSplitData shadowSplitData);
             var shadowDrawSetting = new ShadowDrawingSettings(cullingResults, visualIndex,
                 BatchCullingProjectionType.Orthographic
             );
             shadowDrawSetting.splitData = shadowSplitData;
+            SetTileViewport(n, split, tileSize);
             shadowBuffer.SetViewProjectionMatrices(viewMat,projMat);
             RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
             _context.DrawShadows(ref shadowDrawSetting);
@@ -107,7 +111,7 @@ public class Shadow
     
     void SetTileViewport(int index, int split,int tileSize)
     {
-        Vector2 offset = new Vector2(index / split, index % split);
+        Vector2 offset = new Vector2(index % split, index / split);
         shadowBuffer.SetViewport(new Rect(offset.x * tileSize, offset.y * tileSize, tileSize, tileSize));
         RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
     }
