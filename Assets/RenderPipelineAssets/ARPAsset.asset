@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnableSRPBatch: 1
   EnableDynamicBatch: 1
+  ShadowSettings:
+    MaxShadowDistance: 20
+    DirectionalShadowSetting:
+      AtlasSize: 1028

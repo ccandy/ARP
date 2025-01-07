@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -64,37 +63,51 @@ public class Shadow
     {
         if (ShadowedDirectionalLightCount > 0)
         {
-            RenderDirectionalShadow(ref cullingResults);
+            RenderDirectionalShadows(ref cullingResults);
         }
     }
 
-    private void RenderDirectionalShadow(ref CullingResults cullingResults)
+    private void RenderDirectionalShadow(ref CullingResults cullingResults, int tileSize, int split,int cascadeCount,Vector3 rationRatio, int index)
     {
-        int atlasSize = (int)_shadowGlobalSettings.DirectionalShadowSetting.AtlasSize;
-        shadowBuffer.GetTemporaryRT(dirShadowAtlasId,atlasSize,atlasSize, 32, FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
-        shadowBuffer.SetRenderTarget(dirShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
-        shadowBuffer.ClearRenderTarget(true, false, Color.clear);
-        RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
-        
-        int split = ShadowedDirectionalLightCount <= 1 ? 1 : 2;
-        int tileSize = atlasSize / split;
-        
-        for (int n = 0; n < ShadowedDirectionalLightCount; n++)
+        LocalDirectionalShadowSetting localDirectionalShadowSetting = _localDirectionalShadowSetting[index];
+        int visualIndex = localDirectionalShadowSetting.VisiualLightIndex;
+        float nearPlane = localDirectionalShadowSetting.shadowLightNearPlane;
+
+        for (int n = 0; n < cascadeCount; n++)
         {
-            LocalDirectionalShadowSetting localDirectionalShadowSetting = _localDirectionalShadowSetting[n];
-            int visualIndex = localDirectionalShadowSetting.VisiualLightIndex;
-            float nearPlane = localDirectionalShadowSetting.shadowLightNearPlane;
-            cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(visualIndex, 0, 1, Vector3.one,
+            cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(visualIndex, n, cascadeCount, rationRatio,
                 tileSize, nearPlane,
                 out Matrix4x4 viewMat, out Matrix4x4 projMat, out ShadowSplitData shadowSplitData);
             var shadowDrawSetting = new ShadowDrawingSettings(cullingResults, visualIndex,
                 BatchCullingProjectionType.Orthographic
             );
             shadowDrawSetting.splitData = shadowSplitData;
-            SetTileViewport(n, split, tileSize);
+            SetTileViewport(index * cascadeCount  + n , split, tileSize);
             shadowBuffer.SetViewProjectionMatrices(viewMat,projMat);
             RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
             _context.DrawShadows(ref shadowDrawSetting);
+        }
+    }
+    
+    private void RenderDirectionalShadows(ref CullingResults cullingResults)
+    {
+        int atlasSize = (int)_shadowGlobalSettings.DirectionalShadowSetting.AtlasSize;
+        int cascadeCount = _shadowGlobalSettings.DirectionalShadowSetting.CascadeCount;
+        Vector3 cascadeRatio = new Vector3(_shadowGlobalSettings.DirectionalShadowSetting.CascadeRatio1,
+            _shadowGlobalSettings.DirectionalShadowSetting.CascadeRatio2,_shadowGlobalSettings.DirectionalShadowSetting.CascadeRatio3);
+
+        int tiles = ShadowedDirectionalLightCount * cascadeCount;
+        int split = tiles <= 1 ? 1 : tiles <= 4 ? 2 : 4;
+        int tileSize = atlasSize / split;
+        
+        shadowBuffer.GetTemporaryRT(dirShadowAtlasId,atlasSize,atlasSize, 32, FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
+        shadowBuffer.SetRenderTarget(dirShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
+        shadowBuffer.ClearRenderTarget(true, false, Color.clear);
+        RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
+        
+        for (int n = 0; n < ShadowedDirectionalLightCount; n++)
+        {
+            RenderDirectionalShadow(ref cullingResults, tileSize, split, cascadeCount,cascadeRatio,  n);
         }
     }
 
