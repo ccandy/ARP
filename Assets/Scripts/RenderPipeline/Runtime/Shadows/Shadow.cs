@@ -7,11 +7,16 @@ using UnityEngine.Rendering;
 public class Shadow
 {
     private static int dirShadowAtlasId = Shader.PropertyToID("_DIRECTIONAL_SHADOWMAP");
+    private static int cullingSpheresId = Shader.PropertyToID("_CULLING_SPHERES");
     
     private const string BUFFERNAME = "Shadow Buffer";
     private const int MAX_DIRECTION_SHADOW_COUNT = 4;
+    private const int MAX_CASCADE_COUNT = 4;
     
     private int ShadowedDirectionalLightCount;
+    private Matrix4x4[] _dirViewProjectionMatrices = new Matrix4x4[MAX_DIRECTION_SHADOW_COUNT * MAX_CASCADE_COUNT];
+    private Vector4[] _cullingSpheres = new Vector4[MAX_DIRECTION_SHADOW_COUNT];
+    
     
     private CommandBuffer shadowBuffer = new CommandBuffer
     {
@@ -86,6 +91,15 @@ public class Shadow
             shadowBuffer.SetViewProjectionMatrices(viewMat,projMat);
             RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
             _context.DrawShadows(ref shadowDrawSetting);
+
+            if (index == 0)
+            {
+                Vector4 cullingSphere = shadowSplitData.cullingSphere;
+                cullingSphere.w *= cullingSphere.w;
+                _cullingSpheres[n] = cullingSphere;
+            }
+            
+            
         }
     }
     
@@ -116,10 +130,25 @@ public class Shadow
         
     }
 
+    private void ConvertMatrix(ref Matrix4x4 viewMat, ref Matrix4x4 projMat)
+    {
+        
+    }
+    
     public void CleanUP()
     {
         shadowBuffer.ReleaseTemporaryRT(dirShadowAtlasId);
         RPUtil.ExecuteBuffer(ref _context, shadowBuffer);
+
+
+        int n = 0;
+
+        for (; n < MAX_CASCADE_COUNT; n++)
+        {
+            _cullingSpheres[n] = Vector4.zero;
+        }
+        
+        
     }
     
     void SetTileViewport(int index, int split,int tileSize)
