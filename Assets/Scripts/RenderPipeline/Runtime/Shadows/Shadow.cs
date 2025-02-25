@@ -8,6 +8,7 @@ public class Shadow
 {
     private static int dirShadowAtlasId = Shader.PropertyToID("_DIRECTIONAL_SHADOWMAP");
     private static int cullingSpheresId = Shader.PropertyToID("_CULLING_SPHERES");
+    private static int dirWorldToShadowMatricsId = Shader.PropertyToID("_DIR_WORLDTOSHADO_WMATRICES");
     
     private const string BUFFERNAME = "Shadow Buffer";
     private const int MAX_DIRECTION_SHADOW_COUNT = 4;
@@ -132,7 +133,11 @@ public class Shadow
 
     private void SendToGPU()
     {
+        shadowBuffer.SetGlobalMatrixArray(dirWorldToShadowMatricsId, _dirViewProjectionMatrices);
+        shadowBuffer.SetGlobalVectorArray(cullingSpheresId, _cullingSpheres);
         
+        _context.ExecuteCommandBuffer(shadowBuffer);
+        shadowBuffer.Clear();
     }
 
     private Matrix4x4 ConvertMatrix(Matrix4x4 m, int split, Vector2 offset)
@@ -178,8 +183,11 @@ public class Shadow
         {
             _cullingSpheres[n] = Vector4.zero;
         }
-        
-        
+
+        for (; n < _dirViewProjectionMatrices.Length; n++)
+        {
+            _dirViewProjectionMatrices[n] = Matrix4x4.identity;
+        }
     }
     
     private Vector2 SetTileViewport(int index, int split,int tileSize)
