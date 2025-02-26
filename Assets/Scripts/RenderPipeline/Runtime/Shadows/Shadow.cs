@@ -7,8 +7,9 @@ using UnityEngine.Rendering;
 public class Shadow
 {
     private static int dirShadowAtlasId = Shader.PropertyToID("_DIRECTIONAL_SHADOWMAP");
-    private static int cullingSpheresId = Shader.PropertyToID("_CULLING_SPHERES");
-    private static int dirWorldToShadowMatricsId = Shader.PropertyToID("_DIR_WORLDTOSHADO_WMATRICES");
+    private static int cullingSpheresId = Shader.PropertyToID("_CullingSphere");
+    private static int dirWorldToShadowMatricsId = Shader.PropertyToID("_DirWorldToShadowMatrix");
+    private static int dirShadowSettingsId = Shader.PropertyToID("_DirShadowSettings");
     
     private const string BUFFERNAME = "Shadow Buffer";
     private const int MAX_DIRECTION_SHADOW_COUNT = 4;
@@ -17,7 +18,7 @@ public class Shadow
     private int ShadowedDirectionalLightCount;
     private Matrix4x4[] _dirViewProjectionMatrices = new Matrix4x4[MAX_DIRECTION_SHADOW_COUNT * MAX_CASCADE_COUNT];
     private Vector4[] _cullingSpheres = new Vector4[MAX_DIRECTION_SHADOW_COUNT];
-    
+    private Vector4[] _dirShadowSettings = new Vector4[MAX_DIRECTION_SHADOW_COUNT];
     
     
     private CommandBuffer shadowBuffer = new CommandBuffer
@@ -62,6 +63,13 @@ public class Shadow
                     ShadowStrength = light.shadowStrength,
                     shadowLightNearPlane = light.shadowNearPlane
                 };
+
+                Vector4 dirShadowSetting = new Vector4();
+                dirShadowSetting.x = n;
+                dirShadowSetting.y = light.shadowStrength;
+                dirShadowSetting.z = light.shadowNearPlane;
+                _dirShadowSettings[n] = dirShadowSetting;
+
             } 
         }
     }
@@ -135,6 +143,7 @@ public class Shadow
     {
         shadowBuffer.SetGlobalMatrixArray(dirWorldToShadowMatricsId, _dirViewProjectionMatrices);
         shadowBuffer.SetGlobalVectorArray(cullingSpheresId, _cullingSpheres);
+        shadowBuffer.SetGlobalVectorArray(dirShadowSettingsId, _dirShadowSettings);
         
         _context.ExecuteCommandBuffer(shadowBuffer);
         shadowBuffer.Clear();
