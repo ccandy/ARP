@@ -6,6 +6,7 @@
 #include "Lib/Light.hlsl"
 #include "Lib/BRDF.hlsl"
 #include "Lib/Lighting.hlsl"
+#include "Lib/Shadow.hlsl"
 
 struct VertexInput
 {
